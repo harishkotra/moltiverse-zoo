@@ -75,12 +75,32 @@ USER.md
 
 # local tooling
 .serena/
+.serena-cache/
+.serena-cache/**
+
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+*.sqlite
+*.sqlite3
 
 # Agent credentials and memory (NEVER COMMIT)
 /memory/
 .agent/*.json
 !.agent/workflows/
 local/
+
+# Runtime data (local state)
+skills/moltiverse-zoo/data/
+skills/moltiverse-zoo/data/**/*.json
 
 MOLTIVERSE_ZOO_README.md
 .molitverse-zoo-dev/
