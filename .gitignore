@@ -81,3 +81,8 @@ USER.md
 .agent/*.json
 !.agent/workflows/
 local/
+
+MOLTIVERSE_ZOO_README.md
+.molitverse-zoo-dev/
+PROJECT_SUMMARY.md
+QUICKSTART.md

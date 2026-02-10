@@ -1,0 +1,57 @@
+{
+  // Moltiverse Zoo - OpenClaw Configuration
+  // Multi-agent economic ecosystem for Moltiverse Hackathon
+  
+  "agents": {
+    "list": [
+      {
+        "id": "zoo-coordinator",
+        "name": "Moltiverse Zoo Coordinator",
+        "default": true,
+        "workspace": "~/.openclaw/workspace-zoo",
+        "agentDir": "~/.openclaw/agents/zoo-coordinator/agent",
+        "model": {
+          "primary": "anthropic/claude-sonnet-4"
+        },
+        "subagents": {
+          // Allow spawning any agent type dynamically
+          "allowAgents": ["*"],
+          // Subagents use fast model for quick decisions
+          "model": "anthropic/claude-sonnet-4-5",
+          "thinking": "low"
+        }
+      }
+    ],
+    "defaults": {
+      "maxConcurrent": 1
+    }
+  },
+  
+  "skills": {
+    "load": {
+      // Load moltiverse-zoo skill
+      "extraDirs": ["./skills"]
+    },
+    "entries": {
+      "moltiverse-zoo": {
+        "enabled": true,
+        "env": {
+          "MONAD_PRIVATE_KEY": "${MONAD_PRIVATE_KEY}",
+          "MONAD_RPC_URL": "https://testnet-rpc.monad.xyz",
+          "NADFUN_API_URL": "https://dev-api.nad.fun",
+          "OLLAMA_API_URL": "http://localhost:11434"
+        }
+      }
+    }
+  },
+  
+  "gateway": {
+    "port": 18790,
+    "mode": "local"
+  },
+  
+  "session": {
+    "scope": "per-sender",
+    "mainKey": "zoo-coordinator"
+  }
+}

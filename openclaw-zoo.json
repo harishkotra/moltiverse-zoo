@@ -1,0 +1,72 @@
+{
+  "agents": {
+    "defaults": {
+      "maxConcurrent": 1,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "zoo-coordinator",
+        "default": true,
+        "name": "Moltiverse Zoo Coordinator",
+        "workspace": "/Users/shk/.openclaw/workspace-zoo",
+        "agentDir": "/Users/shk/.openclaw/agents/zoo-coordinator/agent",
+        "model": {
+          "primary": "anthropic/claude-sonnet-4"
+        },
+        "subagents": {
+          "allowAgents": ["*"],
+          "model": "anthropic/claude-sonnet-4-5",
+          "thinking": "low"
+        }
+      }
+    ]
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "session": {
+    "scope": "per-sender",
+    "mainKey": "main"
+  },
+  "gateway": {
+    "port": 18790,
+    "mode": "local",
+    "auth": {
+      "mode": "token",
+      "token": "69a541a5392e2c5a78768f59a022c0fa032b055426c1fa7e"
+    }
+  },
+  "skills": {
+    "load": {
+      "extraDirs": ["./skills"]
+    },
+    "entries": {
+      "moltiverse-zoo": {
+        "enabled": true,
+        "env": {
+          "MONAD_PRIVATE_KEY": "0x427e201c420160a0ad72000b96e953cd4bae6cde248971dbb56c291c67b3a25e",
+          "MONAD_RPC_URL": "https://testnet-rpc.monad.xyz",
+          "NADFUN_API_URL": "https://dev-api.nad.fun",
+          "OLLAMA_API_URL": "http://localhost:11434"
+        }
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-10T19:03:09.955Z",
+    "lastRunVersion": "2026.2.6-3",
+    "lastRunCommand": "doctor",
+    "lastRunMode": "local"
+  },
+  "meta": {
+    "lastTouchedVersion": "2026.2.6-3",
+    "lastTouchedAt": "2026-02-10T19:03:09.958Z"
+  }
+}

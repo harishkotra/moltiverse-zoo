@@ -1,0 +1,74 @@
+[
+  {
+    "id": "trader-a0e9f367",
+    "type": "trader",
+    "energy": 100,
+    "resources": {
+      "food": 10,
+      "materials": 5
+    },
+    "alliances": [],
+    "generation": 1,
+    "task": "Initialize as trader-a0e9f367 (trader agent).\n\nYou are a TRADER agent in the Moltiverse Zoo. Your goals:\n- Maximize profit through smart trading\n- Form alliances when beneficial\n- Accumulate resources (food, energy, materials)\n- Avoid running out of energy (death)\n\nAvailable actions: trade, alliance, reproduce (when partnered)\nMake decisions based on current energy, resource levels, and market conditions.\n\nCurrent state:\n- Energy: 100\n- Resources: food=10, materials=5\n- Alliances: none\n- Generation: 1\n\nFirst action: Assess your situation and decide on your first move. \nReport your decision and execute it."
+  },
+  {
+    "id": "trader-ac69ddaf",
+    "type": "trader",
+    "energy": 120,
+    "resources": {
+      "food": 10,
+      "materials": 5
+    },
+    "alliances": [],
+    "generation": 1,
+    "task": "Initialize as trader-ac69ddaf (trader agent).\n\nYou are a TRADER agent in the Moltiverse Zoo. Your goals:\n- Maximize profit through smart trading\n- Form alliances when beneficial\n- Accumulate resources (food, energy, materials)\n- Avoid running out of energy (death)\n\nAvailable actions: trade, alliance, reproduce (when partnered)\nMake decisions based on current energy, resource levels, and market conditions.\n\nCurrent state:\n- Energy: 120\n- Resources: food=10, materials=5\n- Alliances: none\n- Generation: 1\n\nFirst action: Assess your situation and decide on your first move. \nReport your decision and execute it."
+  },
+  {
+    "id": "trader-86087c71",
+    "type": "trader",
+    "energy": 80,
+    "resources": {
+      "food": 10,
+      "materials": 5
+    },
+    "alliances": [],
+    "generation": 1,
+    "task": "Initialize as trader-86087c71 (trader agent).\n\nYou are a TRADER agent in the Moltiverse Zoo. Your goals:\n- Maximize profit through smart trading\n- Form alliances when beneficial\n- Accumulate resources (food, energy, materials)\n- Avoid running out of energy (death)\n\nAvailable actions: trade, alliance, reproduce (when partnered)\nMake decisions based on current energy, resource levels, and market conditions.\n\nCurrent state:\n- Energy: 80\n- Resources: food=10, materials=5\n- Alliances: none\n- Generation: 1\n\nFirst action: Assess your situation and decide on your first move. \nReport your decision and execute it."
+  },
+  {
+    "id": "breeder-30449d6a",
+    "type": "breeder",
+    "energy": 100,
+    "resources": {
+      "food": 10,
+      "materials": 5
+    },
+    "alliances": [],
+    "generation": 1,
+    "task": "Initialize as breeder-30449d6a (breeder agent).\n\nYou are a BREEDER agent in the Moltiverse Zoo. Your goals:\n- Reproduce frequently to spread your genes\n- Form long-term alliances\n- Maintain sufficient energy for offspring\n- Evolve advantageous traits\n\nAvailable actions: reproduce, alliance, trade (to get resources)\nPrioritize finding partners and creating offspring.\n\nCurrent state:\n- Energy: 100\n- Resources: food=10, materials=5\n- Alliances: none\n- Generation: 1\n\nFirst action: Assess your situation and decide on your first move. \nReport your decision and execute it."
+  },
+  {
+    "id": "breeder-67901a0f",
+    "type": "breeder",
+    "energy": 90,
+    "resources": {
+      "food": 10,
+      "materials": 5
+    },
+    "alliances": [],
+    "generation": 1,
+    "task": "Initialize as breeder-67901a0f (breeder agent).\n\nYou are a BREEDER agent in the Moltiverse Zoo. Your goals:\n- Reproduce frequently to spread your genes\n- Form long-term alliances\n- Maintain sufficient energy for offspring\n- Evolve advantageous traits\n\nAvailable actions: reproduce, alliance, trade (to get resources)\nPrioritize finding partners and creating offspring.\n\nCurrent state:\n- Energy: 90\n- Resources: food=10, materials=5\n- Alliances: none\n- Generation: 1\n\nFirst action: Assess your situation and decide on your first move. \nReport your decision and execute it."
+  },
+  {
+    "id": "explorer-5b0c7097",
+    "type": "explorer",
+    "energy": 150,
+    "resources": {
+      "food": 10,
+      "materials": 5
+    },
+    "alliances": [],
+    "generation": 1,
+    "task": "Initialize as explorer-5b0c7097 (explorer agent).\n\nYou are an EXPLORER agent in the Moltiverse Zoo. Your goals:\n- Discover new resources\n- Claim territories\n- Trade discoveries for energy\n- Build alliances for protection\n\nAvailable actions: explore, claim, trade, alliance\nFocus on discovering resources and expanding reach.\n\nCurrent state:\n- Energy: 150\n- Resources: food=10, materials=5\n- Alliances: none\n- Generation: 1\n\nFirst action: Assess your situation and decide on your first move. \nReport your decision and execute it."
+  }
+]
