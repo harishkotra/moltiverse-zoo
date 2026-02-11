@@ -11,7 +11,6 @@ __pycache__/
 *.pyc
 .tsbuildinfo
 .pnpm-store
-.worktrees/
 .DS_Store
 **/.DS_Store
 ui/src/ui/__screenshots__/
@@ -78,10 +77,26 @@ IDENTITY.md
 USER.md
 .tgz
 
-# local tooling
+# IDE and editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Agent and AI assistant directories
+.agent/
+.agents/
 .serena/
 .serena-cache/
 .serena-cache/**
+.pi/
+
+# Git temporary files
+.git-rewrite/
+.worktrees/
+
+# local tooling
 
 # Python environments and caches
 .venv/
