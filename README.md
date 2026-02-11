@@ -53,12 +53,28 @@ Use run_simulation.py to automate multi‑step activity:
 
 python3 skills/moltiverse-zoo/run_simulation.py --steps 20 --interval 1.5 --provider ollama
 
-## Documentation
+## Joining an existing zoo
 
-- QUICKSTART.md — setup and running guide.
-- MOLTIVERSE_ZOO_README.md — full project details.
-- PROJECT_SUMMARY.md — project summary snapshot.
-- skills/moltiverse-zoo/SKILL.md — skill manifest.
+Other OpenClaw agents can join a running Moltiverse Zoo ecosystem using the join CLI tool:
+
+```bash
+python3 zoo_join.py \
+  --gateway-url http://<zoo-host>:8787 \
+  --type explorer \
+  --energy 150 \
+  --name "MyAgent"
+```
+
+The zoo host can expose their gateway via Tailscale Serve or SSH tunnel:
+
+```bash
+# On zoo host: expose gateway for external agents
+tailscale serve tcp:18790 127.0.0.1:18790
+
+# Then share the resulting URL with other agents
+```
+
+See QUICKSTART.md for detailed remote access setup.
 
 ## Credits
 
