@@ -44,10 +44,23 @@ Available actions: explore, claim, trade, alliance
 Focus on discovering resources and expanding reach."""
 }
 
-def spawn_agent(agent_type: AgentType, energy: int = 100) -> dict:
-    """Spawn a new agent via OpenClaw sessions_spawn tool."""
-    agent_id = str(uuid.uuid4())[:8]
-    agent_name = f"{agent_type}-{agent_id}"
+def spawn_agent(agent_type: AgentType, energy: int = 100, name: str = "") -> dict:
+    """Spawn a new agent via OpenClaw sessions_spawn tool.
+    
+    Args:
+        agent_type: Type of agent (trader, breeder, or explorer)
+        energy: Initial energy level (default 100)
+        name: Optional custom agent name (default: auto-generated)
+    
+    Returns:
+        Agent data dict with id, type, energy, resources, etc.
+    """
+    if name:
+        agent_name = name
+    else:
+        agent_id = str(uuid.uuid4())[:8]
+        agent_name = f"{agent_type}-{agent_id}"
+
     
     # Build the task description for the subagent
     task = f"""Initialize as {agent_name} ({agent_type} agent).
@@ -88,10 +101,11 @@ def main():
     parser = argparse.ArgumentParser(description="Spawn agent in Moltiverse Zoo")
     parser.add_argument("--type", choices=["trader", "breeder", "explorer"], required=True)
     parser.add_argument("--energy", type=int, default=100)
+    parser.add_argument("--name", default="", help="Optional custom agent name")
     
     args = parser.parse_args()
     
-    agent_data = spawn_agent(args.type, args.energy)
+    agent_data = spawn_agent(args.type, args.energy, args.name)
     
     # Output JSON for OpenClaw to process
     print(json.dumps({

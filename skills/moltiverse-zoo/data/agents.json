@@ -70,5 +70,17 @@
     "alliances": [],
     "generation": 1,
     "task": "Initialize as explorer-5b0c7097 (explorer agent).\n\nYou are an EXPLORER agent in the Moltiverse Zoo. Your goals:\n- Discover new resources\n- Claim territories\n- Trade discoveries for energy\n- Build alliances for protection\n\nAvailable actions: explore, claim, trade, alliance\nFocus on discovering resources and expanding reach.\n\nCurrent state:\n- Energy: 150\n- Resources: food=10, materials=5\n- Alliances: none\n- Generation: 1\n\nFirst action: Assess your situation and decide on your first move. \nReport your decision and execute it."
+  },
+  {
+    "id": "TestExplorer",
+    "type": "explorer",
+    "energy": 150,
+    "resources": {
+      "food": 10,
+      "materials": 5
+    },
+    "alliances": [],
+    "generation": 1,
+    "task": "Initialize as TestExplorer (explorer agent).\n\nYou are an EXPLORER agent in the Moltiverse Zoo. Your goals:\n- Discover new resources\n- Claim territories\n- Trade discoveries for energy\n- Build alliances for protection\n\nAvailable actions: explore, claim, trade, alliance\nFocus on discovering resources and expanding reach.\n\nCurrent state:\n- Energy: 150\n- Resources: food=10, materials=5\n- Alliances: none\n- Generation: 1\n\nFirst action: Assess your situation and decide on your first move. \nReport your decision and execute it."
   }
 ]

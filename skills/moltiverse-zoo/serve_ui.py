@@ -108,6 +108,31 @@ class ZooHandler(SimpleHTTPRequestHandler):
             self.wfile.write(response)
             return
 
+        if parsed.path == "/api/control/join":
+            agent_type = payload.get("type", "trader")
+            energy = int(payload.get("energy", 100))
+            agent_name = payload.get("name", "")
+            try:
+                agent = spawn_agent(agent_type, energy, name=agent_name)
+                response = json.dumps({
+                    "status": "ok",
+                    "agent": agent,
+                    "message": f"Agent {agent.get('id')} joined the Moltiverse Zoo!"
+                }).encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(response)))
+                self.end_headers()
+                self.wfile.write(response)
+            except Exception as e:
+                response = json.dumps({"status": "error", "error": str(e)}).encode("utf-8")
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(response)))
+                self.end_headers()
+                self.wfile.write(response)
+            return
+
         self.send_response(404)
         self.end_headers()
 

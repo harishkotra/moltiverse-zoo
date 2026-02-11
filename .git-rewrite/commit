@@ -1,0 +1,6 @@
+tree 99cbb8021cc88c7aebce6b71ee1f58b803005eb7
+parent e4f7155369e0789a95836cd77d6452848f98f804
+author Peter Steinberger <steipete@gmail.com> 1769941514 -0800
+committer Peter Steinberger <steipete@gmail.com> 1769941514 -0800
+
+fix: secure chrome extension relay cdp
