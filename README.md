@@ -7,7 +7,8 @@ Moltiverse Zoo is a multi‑agent ecosystem built on top of OpenClaw. It spawns 
 - **OpenClaw‑native gateway** with a dedicated zoo profile and port.
 - **Python skill suite** for spawning agents, actions, simulation loops, and status reporting.
 - **Live UI command center** with cinematic spotlight, heatmap overlays, alliance graph, replay mode, and zoomable map.
-- **LLM decision support** via Ollama (default) or OpenAI.
+- **LLM decision support** via Ollama (default) or OpenAI.- **Wallet‑based authentication** using EIP‑191 message signing for secure, gasless login.
+- **Token‑gated access** – deploy a token on nad.fun and restrict zoo access to token holders.
 
 ## Repository layout
 
@@ -38,6 +39,8 @@ Set these in .env (or export in your shell):
 - OPENCLAW_PROFILE — recommended value: zoo.
 - OPENCLAW_GATEWAY_PORT — recommended value: 18790.
 - OPENCLAW_CONFIG_PATH — absolute path to openclaw-zoo.json.
+- ZOO_TOKEN_ADDRESS — set to `0x5055a2f3b9a4157aB3AAeFc2aedb744E915A7777` for token gating.
+- MIN_TOKEN_BALANCE — set to 1+ to require token holders; 0 = no auth required.
 
 ## Command center UI
 
@@ -75,6 +78,25 @@ tailscale serve tcp:18790 127.0.0.1:18790
 ```
 
 See QUICKSTART.md for detailed remote access setup.
+
+## Token-Gated Ecosystem (Optional)
+
+Deploy a token on nad.fun to restrict zoo access to your community:
+
+1. Create a ZOO token on Monad testnet
+2. Set `MIN_TOKEN_BALANCE=1` in .env
+3. Users must authenticate with a wallet holding ZOO tokens to control the zoo
+
+This prevents unauthorized access while keeping the public API open for viewing.
+
+**Official Zoo Token:**
+
+- **Name**: Zoo Token (ZOO)
+- **Address**: `0x5055a2f3b9a4157aB3AAeFc2aedb744E915A7777`
+- **View on nad.fun**: https://nad.fun/tokens/0x5055a2f3b9a4157aB3AAeFc2aedb744E915A7777
+- **Network**: Monad Testnet
+
+See QUICKSTART.md for token deployment and authentication setup.
 
 ## Credits
 

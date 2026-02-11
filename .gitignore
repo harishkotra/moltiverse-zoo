@@ -18,6 +18,11 @@ ui/src/ui/__screenshots__/
 ui/playwright-report/
 ui/test-results/
 
+# Python virtual environment
+.venv/
+venv/
+env/
+
 # Android build artifacts
 apps/android/.gradle/
 apps/android/app/build/
