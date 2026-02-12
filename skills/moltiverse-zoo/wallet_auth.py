@@ -9,6 +9,7 @@ import time
 from datetime import datetime, timedelta
 from typing import Optional, Dict
 from web3 import Web3
+from eth_account import Account
 from eth_account.messages import encode_defunct
 
 # Network config
@@ -65,6 +66,7 @@ This is a one-time verification. You will not be charged gas fees."""
         "expires_at": timestamp + 300  # 5 minute expiry
     }
     
+    print(f"Created challenge for wallet: {wallet_address}")
     return message
 
 
@@ -90,6 +92,7 @@ def verify_auth_signature(
             "error": error_message (if any)
         }
     """
+    print(f"Auth attempt for wallet: {wallet_address}")
     try:
         wallet_address = Web3.to_checksum_address(wallet_address)
         
@@ -114,17 +117,30 @@ def verify_auth_signature(
         
         # Verify signature
         message = encode_defunct(text=challenge["message"])
-        recovered_address = Web3.eth.Account.recover_message(message, signature=signature)
+        recovered_address = Account.recover_message(message, signature=signature)
         recovered_address = Web3.to_checksum_address(recovered_address)
         
         if recovered_address.lower() != wallet_address.lower():
+            print(f"Auth failed: signature mismatch. Expected {wallet_address}, got {recovered_address}")
             return {
                 "authenticated": False,
                 "address": wallet_address,
                 "error": f"Invalid signature. Expected {wallet_address}, got {recovered_address}"
             }
         
-        # Clean up challenge
+        # Clean up challenge (only once)
+        print(f"DEBUG: Recovered address: {recovered_address}")
+        print(f"DEBUG: Expected address: {wallet_address}")
+        print(f"DEBUG: Addresses match: {recovered_address.lower() == wallet_address.lower()}")
+
+        if recovered_address.lower() != wallet_address.lower():
+            return {
+                "authenticated": False,
+                "address": wallet_address,
+                "error": f"Invalid signature. Expected {wallet_address}, got {recovered_address}"
+            }
+
+        # Remove stored challenge after successful verification
         del _challenges[wallet_address]
         
         result = {
@@ -170,21 +186,19 @@ def verify_auth_signature(
         }
 
 
-def get_session_token(wallet_address: str, signature: str) -> Optional[str]:
+def get_session_token(wallet_address: str) -> Optional[str]:
     """
     Generate a session token for an authenticated wallet.
     In production, use JWT with expiry.
     """
-    auth_result = verify_auth_signature(wallet_address, signature)
-    
-    if auth_result.get("authenticated"):
-        # Simple token: base64(wallet + timestamp)
+    # Create a session token without re-checking the signature (caller should verify first)
+    try:
         import base64
         token_data = f"{wallet_address}:{int(time.time())}"
         token = base64.b64encode(token_data.encode()).decode()
         return token
-    
-    return None
+    except Exception:
+        return None
 
 
 def verify_session_token(token: str) -> Optional[str]:

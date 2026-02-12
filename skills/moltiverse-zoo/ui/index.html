@@ -4,20 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Moltiverse Zoo Command Center</title>
-    <!-- Import ethers from npm via ES modules -->
-    <script type="importmap">
-      {
-        "imports": {
-          "ethers": "https://esm.sh/ethers@5.7.2"
-        }
-      }
-    </script>
-    <script type="module">
-      import * as ethersModule from "ethers";
-      // Make ethers available globally
-      window.ethers = ethersModule;
-      console.log("Ethers.js loaded from npm:", ethers.version);
-    </script>
+    <!-- Reown AppKit bundle (built from npm packages) -->
+    <script src="/reown-appkit.bundle.js" defer onload="window.REOWN_BUNDLE_LOADED = true"></script>
     <style>
       :root {
         color-scheme: dark;
@@ -1385,6 +1373,9 @@
           const response = await fetch("/api/config");
           const config = await response.json();
           MIN_TOKEN_BALANCE = config.minTokenBalance || 0;
+          window.REOWN_PROJECT_ID = config.reownProjectId || "";
+          window.MONAD_RPC_URL = config.monadRpcUrl || "https://rpc.monad.xyz";
+          window.MONAD_CHAIN_ID = config.monadChainId || 143;
 
           // Show auth modal if needed
           if (MIN_TOKEN_BALANCE > 0 && !sessionToken) {
@@ -1392,8 +1383,10 @@
           } else if (userWallet) {
             updateWalletBadge(userWallet);
           }
+          return config;
         } catch (error) {
           console.error("Failed to load config:", error);
+          return null;
         }
       }
 
@@ -1416,58 +1409,19 @@
       }
 
       // ========== AUTOMATIC WALLET CONNECTION ==========
-
-      // Wait for ethers to load (ES module loads asynchronously)
-      async function waitForEthers() {
-        let attempts = 0;
-        while (!window.ethers && attempts < 20) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
-          attempts++;
-        }
-        return window.ethers;
-      }
-
       async function connectWalletAuto() {
         showStatus("Connecting to wallet...", "info");
 
-        // Wait for ethers library to load
-        const ethers = await waitForEthers();
-        if (!ethers) {
+        if (typeof window.zooConnectWallet !== "function") {
           showStatus(
-            "Failed to load wallet library. Please refresh the page or use Manual Sign-In below.",
+            "Wallet connector is still loading. Please refresh the page or use Manual Sign-In below.",
             "error",
           );
-          console.error("Ethers library timeout");
           return;
         }
 
         try {
-          // Try browser extension wallets first
-          if (window.ethereum) {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-            // Detect wallet name
-            let walletName = "Web3 Wallet";
-            if (window.ethereum.isMetaMask) walletName = "MetaMask";
-            else if (window.ethereum.isBackpack) walletName = "Backpack";
-            else if (window.ethereum.isCoinbaseWallet) walletName = "Coinbase Wallet";
-            else if (window.ethereum.isPhantom) walletName = "Phantom";
-
-            // Request account access
-            await provider.send("eth_requestAccounts", []);
-            const signer = provider.getSigner();
-            const walletAddress = await signer.getAddress();
-
-            showStatus(`${walletName} connected! Creating challenge...`, "success");
-            await completeAuthentication(signer, walletAddress);
-            return;
-          }
-
-          // If no browser wallet, show message
-          showStatus(
-            "No wallet extension detected. Please install MetaMask, Backpack, Coinbase Wallet, or use Manual Sign-In below.",
-            "error",
-          );
+          await window.zooConnectWallet();
         } catch (error) {
           console.error("Wallet connection error:", error);
           if (error.code === 4001 || error.code === "ACTION_REJECTED") {
@@ -1478,26 +1432,54 @@
         }
       }
 
+      async function requestAuthChallenge(walletAddress) {
+        const challengeResponse = await fetch("/api/auth/challenge", {
+          method: "GET",
+          headers: { "X-Wallet-Address": walletAddress },
+        });
+        const challengeData = await challengeResponse.json();
+
+        if (!challengeResponse.ok) {
+          throw new Error(challengeData.error || "Failed to create challenge");
+        }
+
+        return challengeData.challenge;
+      }
+
+      async function verifyAuthSignature(walletAddress, signature) {
+        const verifyResponse = await fetch("/api/auth/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ wallet: walletAddress, signature }),
+        });
+        const verifyData = await verifyResponse.json();
+
+        if (verifyResponse.ok && verifyData.session_token) {
+          sessionToken = verifyData.session_token;
+          userWallet = verifyData.wallet;
+          localStorage.setItem("zoo_session_token", sessionToken);
+          localStorage.setItem("zoo_wallet", userWallet);
+          updateWalletBadge(userWallet);
+          showStatus(
+            `✓ Logged in! Balance: ${verifyData.token_balance || "N/A"} ZOO tokens`,
+            "success",
+          );
+          setTimeout(() => hideAuthModal(), 1500);
+          return true;
+        }
+
+        showStatus(verifyData.error || "Authentication failed", "error");
+        return false;
+      }
+
       async function completeAuthentication(signer, walletAddress) {
         try {
-          // Get challenge from backend
-          const challengeResponse = await fetch("/api/auth/challenge", {
-            method: "GET",
-            headers: { "X-Wallet-Address": walletAddress },
-          });
-          const challengeData = await challengeResponse.json();
-
-          if (!challengeResponse.ok) {
-            showStatus(challengeData.error || "Failed to create challenge", "error");
-            return;
-          }
-
+          const challenge = await requestAuthChallenge(walletAddress);
           showStatus("Please sign the message in your wallet...", "info");
 
-          // Request signature from wallet
           let signature;
           try {
-            signature = await signer.signMessage(challengeData.challenge);
+            signature = await signer.signMessage(challenge);
           } catch (signError) {
             if (signError.code === 4001 || signError.code === "ACTION_REJECTED") {
               showStatus("Signature request denied. Please try again.", "error");
@@ -1508,34 +1490,17 @@
           }
 
           showStatus("Verifying signature...", "info");
-
-          // Verify with backend
-          const verifyResponse = await fetch("/api/auth/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ wallet: walletAddress, signature }),
-          });
-          const verifyData = await verifyResponse.json();
-
-          if (verifyResponse.ok && verifyData.session_token) {
-            sessionToken = verifyData.session_token;
-            userWallet = verifyData.wallet;
-            localStorage.setItem("zoo_session_token", sessionToken);
-            localStorage.setItem("zoo_wallet", userWallet);
-            updateWalletBadge(userWallet);
-            showStatus(
-              `✓ Logged in! Balance: ${verifyData.token_balance || "N/A"} ZOO tokens`,
-              "success",
-            );
-            setTimeout(() => hideAuthModal(), 1500);
-          } else {
-            showStatus(verifyData.error || "Authentication failed", "error");
-          }
+          await verifyAuthSignature(walletAddress, signature);
         } catch (error) {
           console.error("Authentication error:", error);
           showStatus(`Error: ${error.message || "Authentication failed"}`, "error");
         }
       }
+
+      window.zooAuth = {
+        requestChallenge: requestAuthChallenge,
+        verifySignature: verifyAuthSignature,
+      };
 
       async function createChallenge() {
         const walletInput = document.getElementById("wallet-input");
@@ -1547,21 +1512,12 @@
         }
 
         try {
-          const response = await fetch("/api/auth/challenge", {
-            method: "GET",
-            headers: { "X-Wallet-Address": wallet },
-          });
-          const data = await response.json();
-
-          if (response.ok) {
-            document.getElementById("challenge-display").style.display = "block";
-            document.getElementById("challenge-text").textContent = data.challenge;
-            document.getElementById("btn-create-challenge").style.display = "none";
-            document.getElementById("btn-verify").style.display = "block";
-            showStatus("Challenge created. Sign this message with your wallet.", "success");
-          } else {
-            showStatus(data.error || "Failed to create challenge", "error");
-          }
+          const challenge = await requestAuthChallenge(wallet);
+          document.getElementById("challenge-display").style.display = "block";
+          document.getElementById("challenge-text").textContent = challenge;
+          document.getElementById("btn-create-challenge").style.display = "none";
+          document.getElementById("btn-verify").style.display = "block";
+          showStatus("Challenge created. Sign this message with your wallet.", "success");
         } catch (err) {
           showStatus(`Error: ${err.message}`, "error");
         }
@@ -1577,27 +1533,7 @@
         }
 
         try {
-          const response = await fetch("/api/auth/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ wallet, signature }),
-          });
-          const data = await response.json();
-
-          if (response.ok && data.session_token) {
-            sessionToken = data.session_token;
-            userWallet = data.wallet;
-            localStorage.setItem("zoo_session_token", sessionToken);
-            localStorage.setItem("zoo_wallet", userWallet);
-            updateWalletBadge(userWallet);
-            showStatus(
-              `✓ Logged in! Balance: ${data.token_balance || "N/A"} ZOO tokens`,
-              "success",
-            );
-            setTimeout(() => hideAuthModal(), 1500);
-          } else {
-            showStatus(data.error || "Authentication failed", "error");
-          }
+          await verifyAuthSignature(wallet, signature);
         } catch (err) {
           showStatus(`Error: ${err.message}`, "error");
         }
@@ -1639,9 +1575,22 @@
       }
 
       // Load config and check auth on page load
-      loadConfig().then(() => {
-        fetchStatus();
-        setInterval(fetchStatus, 2000);
+      loadConfig().then((config) => {
+        console.log("Config loaded, waiting for Reown bundle...", config);
+
+        // Wait for bundle to load
+        const waitForBundle = () => {
+          if (typeof window.initReownAppKit === "function") {
+            console.log("Reown bundle ready, initializing AppKit with config:", config);
+            window.initReownAppKit(config || {});
+            fetchStatus();
+            setInterval(fetchStatus, 2000);
+          } else {
+            console.log("Waiting for Reown bundle...");
+            setTimeout(waitForBundle, 100);
+          }
+        };
+        waitForBundle();
       });
     </script>
   </body>

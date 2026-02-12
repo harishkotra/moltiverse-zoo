@@ -11,6 +11,8 @@ from http.server import SimpleHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
+from dotenv import load_dotenv
+
 from ecosystem_status import get_ecosystem_status
 from spawn_agent import spawn_agent
 from wallet_auth import (
@@ -20,12 +22,20 @@ from wallet_auth import (
     verify_session_token
 )
 
+# Load environment variables from .env file
+load_dotenv(Path(__file__).parent.parent.parent / ".env")
+
 BASE_DIR = Path(__file__).parent
 UI_DIR = BASE_DIR / "ui"
 SIM_PROCESS: subprocess.Popen | None = None
 
 # Require token balance for control endpoints (set to 0 to disable)
 MIN_TOKEN_BALANCE = float(os.getenv("MIN_TOKEN_BALANCE", "0"))
+
+# Reown AppKit configuration
+REOWN_PROJECT_ID = os.getenv("REOWN_PROJECT_ID", "")
+MONAD_RPC_URL = os.getenv("MONAD_RPC_URL", "https://rpc.monad.xyz")
+MONAD_CHAIN_ID = int(os.getenv("MONAD_CHAIN_ID", "143"))
 
 
 def _check_auth(request_handler) -> tuple[bool, str | None]:
@@ -94,7 +104,12 @@ class ZooHandler(SimpleHTTPRequestHandler):
             return
 
         if parsed.path == "/api/config":
-            payload = json.dumps({"minTokenBalance": MIN_TOKEN_BALANCE}).encode("utf-8")
+            payload = json.dumps({
+                "minTokenBalance": MIN_TOKEN_BALANCE,
+                "reownProjectId": REOWN_PROJECT_ID,
+                "monadRpcUrl": MONAD_RPC_URL,
+                "monadChainId": MONAD_CHAIN_ID,
+            }).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(payload)))
@@ -135,9 +150,10 @@ class ZooHandler(SimpleHTTPRequestHandler):
                 return _send_json(self, 400, {"error": "Missing wallet or signature"})
             
             result = verify_auth_signature(wallet, signature, int(MIN_TOKEN_BALANCE))
-            
+
             if result.get("authenticated"):
-                session_token = get_session_token(wallet, signature)
+                # Generate session token without re-running verification (verify_auth_signature already ran)
+                session_token = get_session_token(wallet)
                 return _send_json(self, 200, {
                     "status": "ok",
                     "session_token": session_token,

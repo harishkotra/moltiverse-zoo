@@ -158,9 +158,14 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@coinbase/wallet-sdk": "^4.3.7",
+    "@gemini-wallet/core": "^0.3.2",
     "@grammyjs/types": "^3.24.0",
     "@lit-labs/signals": "^0.2.0",
     "@lit/context": "^1.1.6",
+    "@metamask/sdk": "^0.33.1",
+    "@reown/appkit": "^1.8.18",
+    "@reown/appkit-adapter-wagmi": "^1.8.18",
     "@types/express": "^5.0.6",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^25.2.2",
@@ -169,16 +174,22 @@
     "@types/ws": "^8.18.1",
     "@typescript/native-preview": "7.0.0-dev.20260209.1",
     "@vitest/coverage-v8": "^4.0.18",
+    "@wagmi/core": "^3.3.3",
+    "@walletconnect/ethereum-provider": "^2.23.5",
+    "esbuild": "^0.27.3",
     "lit": "^3.3.2",
     "ollama": "^0.6.3",
     "oxfmt": "0.28.0",
     "oxlint": "^1.43.0",
     "oxlint-tsgolint": "^0.11.5",
+    "porto": "^0.2.37",
     "rolldown": "1.0.0-rc.3",
     "tsdown": "^0.20.3",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "viem": "^2.45.3",
+    "vitest": "^4.0.18",
+    "wagmi": "^3.4.3"
   },
   "peerDependencies": {
     "@napi-rs/canvas": "^0.1.89",
