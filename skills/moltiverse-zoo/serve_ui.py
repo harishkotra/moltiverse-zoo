@@ -93,6 +93,15 @@ class ZooHandler(SimpleHTTPRequestHandler):
             self.wfile.write(payload)
             return
 
+        if parsed.path == "/api/config":
+            payload = json.dumps({"minTokenBalance": MIN_TOKEN_BALANCE}).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+            return
+
         if parsed.path == "/api/control/status":
             running = SIM_PROCESS is not None and SIM_PROCESS.poll() is None
             payload = json.dumps({"running": running}).encode("utf-8")
