@@ -4,9 +4,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Moltiverse Zoo Command Center</title>
-    <!-- Web3Modal for multi-wallet support -->
-    <script src="https://cdn.jsdelivr.net/npm/@web3modal/standalone@2.4.3/dist/index.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+    <!-- Import ethers from npm via ES modules -->
+    <script type="importmap">
+      {
+        "imports": {
+          "ethers": "https://esm.sh/ethers@5.7.2"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as ethersModule from "ethers";
+      // Make ethers available globally
+      window.ethers = ethersModule;
+      console.log("Ethers.js loaded from npm:", ethers.version);
+    </script>
     <style>
       :root {
         color-scheme: dark;
@@ -1405,18 +1416,28 @@
       }
 
       // ========== AUTOMATIC WALLET CONNECTION ==========
-      let web3Modal = null;
+
+      // Wait for ethers to load (ES module loads asynchronously)
+      async function waitForEthers() {
+        let attempts = 0;
+        while (!window.ethers && attempts < 20) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+          attempts++;
+        }
+        return window.ethers;
+      }
 
       async function connectWalletAuto() {
         showStatus("Connecting to wallet...", "info");
 
-        // Check if libraries are loaded
-        if (typeof ethers === "undefined" || !window.ethers) {
+        // Wait for ethers library to load
+        const ethers = await waitForEthers();
+        if (!ethers) {
           showStatus(
-            "Loading wallet libraries... Please refresh the page if this persists.",
+            "Failed to load wallet library. Please refresh the page or use Manual Sign-In below.",
             "error",
           );
-          console.error("Ethers library not found");
+          console.error("Ethers library timeout");
           return;
         }
 
