@@ -719,9 +719,12 @@
                     onclick="connectWalletAuto()"
                     style="width: 100%; font-size: 16px; padding: 16px"
                   >
-                    🦊 Connect with MetaMask
+                    🔗 Connect Wallet
                   </button>
                   <p style="color: var(--muted); font-size: 12px; margin-top: 12px">
+                    Supports MetaMask, Backpack, Coinbase Wallet & more
+                  </p>
+                  <p style="color: var(--muted); font-size: 11px; margin-top: 4px">
                     Requires ZOO tokens on Monad Mainnet
                   </p>
                 </div>
@@ -1410,13 +1413,25 @@
         async function connectWalletAuto() {
           showStatus("Connecting to wallet...", "info");
 
-          // Check if MetaMask/Web3 provider exists
+          // Check if any Web3 wallet provider exists
           if (!window.ethereum) {
             showStatus(
-              "MetaMask not detected. Please install MetaMask or use Manual Sign-In.",
+              "No Web3 wallet detected. Please install MetaMask, Backpack, Coinbase Wallet, or another Web3 wallet. Or use Manual Sign-In below.",
               "error",
             );
             return;
+          }
+
+          // Detect wallet type for better user feedback
+          let walletName = "Web3 Wallet";
+          if (window.ethereum.isMetaMask) {
+            walletName = "MetaMask";
+          } else if (window.ethereum.isBackpack) {
+            walletName = "Backpack";
+          } else if (window.ethereum.isCoinbaseWallet) {
+            walletName = "Coinbase Wallet";
+          } else if (window.ethereum.isPhantom) {
+            walletName = "Phantom";
           }
 
           try {
@@ -1426,7 +1441,7 @@
             const signer = provider.getSigner();
             const walletAddress = await signer.getAddress();
 
-            showStatus("Wallet connected! Creating challenge...", "success");
+            showStatus(`${walletName} connected! Creating challenge...`, "success");
 
             // Get challenge from backend
             const challengeResponse = await fetch("/api/auth/challenge", {
@@ -1511,7 +1526,7 @@
               document.getElementById("challenge-text").textContent = data.challenge;
               document.getElementById("btn-create-challenge").style.display = "none";
               document.getElementById("btn-verify").style.display = "block";
-              showStatus("Challenge created. Sign it with your wallet (MetaMask, etc.)", "success");
+              showStatus("Challenge created. Sign this message with your wallet.", "success");
             } else {
               showStatus(data.error || "Failed to create challenge", "error");
             }
