@@ -18,14 +18,29 @@ Moltiverse Zoo is a multi‑agent ecosystem built on top of OpenClaw. It spawns 
 
 ## Quick start
 
-Follow the step‑by‑step guide in QUICKSTART.md.
+**See [QUICKSTART.md](QUICKSTART.md) for complete instructions.**
 
-Short path:
+Essential steps:
 
-1. Run setup: ./setup-zoo.sh
-2. Start the gateway: pnpm openclaw --profile zoo gateway --port 18790 --verbose
-3. Spawn agents: python3 skills/moltiverse-zoo/spawn_agent.py ...
-4. Start the UI: python3 skills/moltiverse-zoo/serve_ui.py --port 8787
+```bash
+# 1. Setup (one-time)
+python3 -m venv .venv
+source .venv/bin/activate
+pip install web3 requests eth-account python-dotenv Pillow
+
+# 2. Start gateway (Terminal 1)
+set -a && source .env && set +a
+pnpm openclaw --profile zoo gateway --port 18790 --verbose
+
+# 3. Start UI (Terminal 2)
+source .venv/bin/activate
+python3 skills/moltiverse-zoo/serve_ui.py --port 8787
+
+# 4. Open browser
+open http://127.0.0.1:8787
+```
+
+**Token Address**: `0x5055a2f3b9a4157aB3AAeFc2aedb744E915A7777` ([View on nad.fun](https://nad.fun/tokens/0x5055a2f3b9a4157aB3AAeFc2aedb744E915A7777))
 
 ## Environment variables
 
@@ -83,7 +98,7 @@ See QUICKSTART.md for detailed remote access setup.
 
 Deploy a token on nad.fun to restrict zoo access to your community:
 
-1. Create a ZOO token on Monad testnet
+1. Create a ZOO token on Monad mainnet
 2. Set `MIN_TOKEN_BALANCE=1` in .env
 3. Users must authenticate with a wallet holding ZOO tokens to control the zoo
 
@@ -94,7 +109,7 @@ This prevents unauthorized access while keeping the public API open for viewing.
 - **Name**: Zoo Token (ZOO)
 - **Address**: `0x5055a2f3b9a4157aB3AAeFc2aedb744E915A7777`
 - **View on nad.fun**: https://nad.fun/tokens/0x5055a2f3b9a4157aB3AAeFc2aedb744E915A7777
-- **Network**: Monad Testnet
+- **Network**: Monad Mainnet
 
 See QUICKSTART.md for token deployment and authentication setup.
 

@@ -9,7 +9,7 @@ import sys
 from web3 import Web3
 
 # Default RPC from AGENTS.md
-MONAD_RPC = os.getenv("MONAD_RPC_URL", "https://testnet-rpc.monad.xyz")
+MONAD_RPC = os.getenv("MONAD_RPC_URL", "https://rpc.monad.xyz")
 
 def check_balance(address: str, token_address: str = None) -> dict:
     """Check MON or token balance."""

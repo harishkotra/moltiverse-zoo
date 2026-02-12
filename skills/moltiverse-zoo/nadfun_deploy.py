@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Deploy a token on nad.fun using the 4-step flow from AGENTS.md
-and deploy on-chain to Monad testnet.
+and deploy on-chain to Monad mainnet.
 """
 import argparse
 import json
@@ -12,10 +12,10 @@ from pathlib import Path
 from web3 import Web3
 
 # API endpoints from AGENTS.md
-NADFUN_API = os.getenv("NADFUN_API_URL", "https://dev-api.nad.fun")
+NADFUN_API = os.getenv("NADFUN_API_URL", "https://api.nad.fun")
 
 # Monad network config
-MONAD_RPC = os.getenv("MONAD_RPC_URL", "https://testnet-rpc.monad.xyz")
+MONAD_RPC = os.getenv("MONAD_RPC_URL", "https://rpc.monad.xyz")
 PRIVATE_KEY = os.getenv("MONAD_PRIVATE_KEY", "")
 
 # BondingCurveRouter contract on Monad (from AGENTS.md)
@@ -221,7 +221,7 @@ def main():
                 "predicted_address": "0x7777000000000000000000000000000000000000",
             },
             "next_steps": [
-                "1. Visit https://dev.nad.fun to deploy token via UI",
+                "1. Visit https://nad.fun to deploy token via UI",
                 "2. Set ZOO_TOKEN_ADDRESS in .env after deployment",
                 "3. Set MIN_TOKEN_BALANCE to gate zoo access"
             ]

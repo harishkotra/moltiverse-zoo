@@ -12,7 +12,7 @@ from web3 import Web3
 from eth_account.messages import encode_defunct
 
 # Network config
-MONAD_RPC = os.getenv("MONAD_RPC_URL", "https://testnet-rpc.monad.xyz")
+MONAD_RPC = os.getenv("MONAD_RPC_URL", "https://rpc.monad.xyz")
 
 # Zoo token configuration (set after deployment)
 ZOO_TOKEN_ADDRESS = os.getenv("ZOO_TOKEN_ADDRESS", "")

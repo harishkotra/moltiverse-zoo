@@ -87,7 +87,7 @@ python3 {baseDir}/check_balance.py --address <wallet> --token <token_address>
 Required environment variables:
 
 - `MONAD_PRIVATE_KEY`: Wallet private key for on-chain operations
-- `MONAD_RPC_URL`: RPC endpoint (default: https://testnet-rpc.monad.xyz)
+- `MONAD_RPC_URL`: RPC endpoint (default: https://rpc.monad.xyz)
 - `NADFUN_API_URL`: nad.fun API endpoint (default: https://dev-api.nad.fun)
 - `OLLAMA_API_URL`: Ollama endpoint for agent decisions (optional)
 - `OPENAI_API_KEY`: OpenAI API key for agent decisions (optional)

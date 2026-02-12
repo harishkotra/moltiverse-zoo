@@ -49,7 +49,7 @@
         "enabled": true,
         "env": {
           "MONAD_PRIVATE_KEY": "0x427e201c420160a0ad72000b96e953cd4bae6cde248971dbb56c291c67b3a25e",
-          "MONAD_RPC_URL": "https://testnet-rpc.monad.xyz",
+          "MONAD_RPC_URL": "https://rpc.monad.xyz",
           "NADFUN_API_URL": "https://dev-api.nad.fun",
           "OLLAMA_API_URL": "http://localhost:11434"
         }
