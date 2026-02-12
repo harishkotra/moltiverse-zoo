@@ -4,8 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Moltiverse Zoo Command Center</title>
-    <!-- Ethers.js for Web3 wallet connection -->
-    <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <!-- Web3Modal for multi-wallet support -->
+    <script src="https://cdn.jsdelivr.net/npm/@web3modal/standalone@2.4.3/dist/index.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
     <style>
       :root {
         color-scheme: dark;
@@ -1404,49 +1405,60 @@
       }
 
       // ========== AUTOMATIC WALLET CONNECTION ==========
+      let web3Modal = null;
+
       async function connectWalletAuto() {
         showStatus("Connecting to wallet...", "info");
 
-        // Check if ethers.js library is loaded
+        // Check if libraries are loaded
         if (typeof ethers === "undefined" || !window.ethers) {
           showStatus(
-            "Ethers.js library not loaded. Please refresh the page. If the problem persists, use Manual Sign-In below.",
+            "Loading wallet libraries... Please refresh the page if this persists.",
             "error",
           );
-          console.error("Ethers.js library not found");
+          console.error("Ethers library not found");
           return;
-        }
-
-        // Check if any Web3 wallet provider exists
-        if (!window.ethereum) {
-          showStatus(
-            "No Web3 wallet detected. Please install MetaMask, Backpack, Coinbase Wallet, or another Web3 wallet. Or use Manual Sign-In below.",
-            "error",
-          );
-          return;
-        }
-
-        // Detect wallet type for better user feedback
-        let walletName = "Web3 Wallet";
-        if (window.ethereum.isMetaMask) {
-          walletName = "MetaMask";
-        } else if (window.ethereum.isBackpack) {
-          walletName = "Backpack";
-        } else if (window.ethereum.isCoinbaseWallet) {
-          walletName = "Coinbase Wallet";
-        } else if (window.ethereum.isPhantom) {
-          walletName = "Phantom";
         }
 
         try {
-          // Request account access
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          await provider.send("eth_requestAccounts", []);
-          const signer = provider.getSigner();
-          const walletAddress = await signer.getAddress();
+          // Try browser extension wallets first
+          if (window.ethereum) {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-          showStatus(`${walletName} connected! Creating challenge...`, "success");
+            // Detect wallet name
+            let walletName = "Web3 Wallet";
+            if (window.ethereum.isMetaMask) walletName = "MetaMask";
+            else if (window.ethereum.isBackpack) walletName = "Backpack";
+            else if (window.ethereum.isCoinbaseWallet) walletName = "Coinbase Wallet";
+            else if (window.ethereum.isPhantom) walletName = "Phantom";
 
+            // Request account access
+            await provider.send("eth_requestAccounts", []);
+            const signer = provider.getSigner();
+            const walletAddress = await signer.getAddress();
+
+            showStatus(`${walletName} connected! Creating challenge...`, "success");
+            await completeAuthentication(signer, walletAddress);
+            return;
+          }
+
+          // If no browser wallet, show message
+          showStatus(
+            "No wallet extension detected. Please install MetaMask, Backpack, Coinbase Wallet, or use Manual Sign-In below.",
+            "error",
+          );
+        } catch (error) {
+          console.error("Wallet connection error:", error);
+          if (error.code === 4001 || error.code === "ACTION_REJECTED") {
+            showStatus("Connection request denied", "error");
+          } else {
+            showStatus(`Error: ${error.message || "Connection failed"}`, "error");
+          }
+        }
+      }
+
+      async function completeAuthentication(signer, walletAddress) {
+        try {
           // Get challenge from backend
           const challengeResponse = await fetch("/api/auth/challenge", {
             method: "GET",
@@ -1464,13 +1476,12 @@
           // Request signature from wallet
           let signature;
           try {
-            // Use personal_sign for better compatibility
             signature = await signer.signMessage(challengeData.challenge);
           } catch (signError) {
-            if (signError.code === 4001) {
+            if (signError.code === 4001 || signError.code === "ACTION_REJECTED") {
               showStatus("Signature request denied. Please try again.", "error");
             } else {
-              showStatus(`Signing failed: ${signError.message}`, "error");
+              showStatus(`Signing failed: ${signError.message || "Unknown error"}`, "error");
             }
             return;
           }
@@ -1500,12 +1511,8 @@
             showStatus(verifyData.error || "Authentication failed", "error");
           }
         } catch (error) {
-          console.error("Wallet connection error:", error);
-          if (error.code === 4001) {
-            showStatus("Connection request denied", "error");
-          } else {
-            showStatus(`Error: ${error.message}`, "error");
-          }
+          console.error("Authentication error:", error);
+          showStatus(`Error: ${error.message || "Authentication failed"}`, "error");
         }
       }
 
