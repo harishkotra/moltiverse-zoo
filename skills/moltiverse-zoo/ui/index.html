@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Moltiverse Zoo Command Center</title>
     <!-- Ethers.js for Web3 wallet connection -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"
-      type="application/javascript"
-    ></script>
+    <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <style>
       :root {
         color-scheme: dark;
@@ -1409,6 +1406,16 @@
       // ========== AUTOMATIC WALLET CONNECTION ==========
       async function connectWalletAuto() {
         showStatus("Connecting to wallet...", "info");
+
+        // Check if ethers.js library is loaded
+        if (typeof ethers === "undefined" || !window.ethers) {
+          showStatus(
+            "Ethers.js library not loaded. Please refresh the page. If the problem persists, use Manual Sign-In below.",
+            "error",
+          );
+          console.error("Ethers.js library not found");
+          return;
+        }
 
         // Check if any Web3 wallet provider exists
         if (!window.ethereum) {
