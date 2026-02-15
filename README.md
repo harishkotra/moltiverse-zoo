@@ -10,11 +10,13 @@ Moltiverse Zoo is a multi‑agent ecosystem built on top of OpenClaw. It spawns 
 - **LLM decision support** via Ollama (default) or OpenAI.- **Wallet‑based authentication** using EIP‑191 message signing for secure, gasless login.
 - **Token‑gated access** – deploy a token on nad.fun and restrict zoo access to token holders.
 
+<img width="1613" height="1845" alt="screencapture-localhost-8787-2026-02-15-23_46_57" src="https://github.com/user-attachments/assets/8f9e2ade-ba96-4c75-ace1-6e032b0ff025" />
+
 ## Repository layout
 
 - skills/moltiverse-zoo/ — Python skills, data, and UI.
 - openclaw-zoo.json — Zoo gateway config (profile‑scoped).
-- .env — Local secrets and defaults (not committed).
+- .env — Local secrets and defaults
 
 ## Quick start
 
@@ -110,8 +112,6 @@ This prevents unauthorized access while keeping the public API open for viewing.
 - **Address**: `0x5055a2f3b9a4157aB3AAeFc2aedb744E915A7777`
 - **View on nad.fun**: https://nad.fun/tokens/0x5055a2f3b9a4157aB3AAeFc2aedb744E915A7777
 - **Network**: Monad Mainnet
-
-See QUICKSTART.md for token deployment and authentication setup.
 
 ## Credits
 
